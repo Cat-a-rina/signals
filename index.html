@@ -11,6 +11,8 @@ let playableAudio
 let player
 
 async function startRecording() {
+  //start recording after ensuring that we can
+  await Tone.start()
   //set up mic to take in audio from user
   const mic = new Tone.UserMedia()
   //set up recorder
@@ -18,8 +20,7 @@ async function startRecording() {
   //open mic and connect to recorder
   await mic.open()
   mic.connect(recorder)
-  //start recording after ensuring that we can
-  await Tone.start()
+  
   recorder.start()
   //record for five seconds
   await Tone.sleep(5)
@@ -42,8 +43,8 @@ play it back
 
 
 
-function nodesPlay() {
-  startRecording()
+async function nodesPlay() {
+  await startRecording()
   const volume = new Tone.Gain(0.8)
   const effect = new Tone.Vibrato()
 
@@ -60,7 +61,7 @@ function nodesPlay() {
   */
 //UI, control
 nn.create('button')
-  .contect('play thru nodes!')
+  .content('play thru nodes!')
   .addTo('body')
   .on('click', nodesPlay)
   
