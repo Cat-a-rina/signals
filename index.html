@@ -1,0 +1,67 @@
+<body style="background: white"></body>
+<script src="https://cdn.jsdelivr.net/gh/netizenorg/netnet-standard-library/build/nn.min.js"></script>
+<script src="https://unpkg.com/tone"></script>
+<script>
+/*global nn, Tone */
+/*Take in user media,
+disotrt/change,
+play it back*/
+
+let playableAudio
+let player
+
+async function startRecording() {
+  //set up mic to take in audio from user
+  const mic = new Tone.UserMedia()
+  //set up recorder
+  const recorder = new Tone.Recorder()
+  //open mic and connect to recorder
+  await mic.open()
+  mic.connect(recorder)
+  //start recording after ensuring that we can
+  await Tone.start()
+  recorder.start()
+  //record for five seconds
+  await Tone.sleep(5)
+  //store recorded audio as original audio
+  const originalAudio = await recorder.stop()
+  //turn into audio into usable URL
+  playableAudio = URL.createObjectURL(originalAudio)
+  player = new Tone.Player(playableAudio).toDestination()
+
+}
+
+
+//replay distored audio back to user
+// nodes
+/*
+take user media/input
+distort it
+play it back
+*/
+
+
+
+function nodesPlay() {
+  startRecording()
+  const volume = new Tone.Gain(0.8)
+  const effect = new Tone.Vibrato()
+
+  player.connect(effect)
+  effect.connect(volume)
+  volume.toDestination()
+  player.start()
+}
+
+
+//audio graph
+  /*
+  source --> volume --> speaker
+  */
+//UI, control
+nn.create('button')
+  .contect('play thru nodes!')
+  .addTo('body')
+  .on('click', nodesPlay)
+  
+</script>
