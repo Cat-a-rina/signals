@@ -9,60 +9,72 @@ play it back*/
 
 let playableAudio
 let player
+let isRecording = false
 
-async function startRecording() {
-  //start recording after ensuring that we can
+async function recordAudio() {
   await Tone.start()
   //set up mic to take in audio from user
   const mic = new Tone.UserMedia()
   //set up recorder
   const recorder = new Tone.Recorder()
-  //open mic and connect to recorder
-  await mic.open()
-  mic.connect(recorder)
-  
-  recorder.start()
-  //record for five seconds
-  await Tone.sleep(5)
-  //store recorded audio as original audio
-  const originalAudio = await recorder.stop()
-  //turn into audio into usable URL
-  playableAudio = URL.createObjectURL(originalAudio)
-  player = new Tone.Player(playableAudio).toDestination()
+  //check if not already recording
+  if (!isRecording) {
+    //open mic and connect to recorder
+    await mic.open()
+    mic.connect(recorder)
 
+    recorder.start()
+    isRecording = true
+    
+    recordAudio.content('Stop Recording')
+  } else {
+    //stop mic
+    mic.close()
+    isRecording = false
+    //store recorded audio as original audio
+    const originalAudio = await recorder.stop()
+    //turn into audio into usable URL
+    playableAudio = URL.createObjectURL(originalAudio)
+    player = new Tone.Player(playableAudio).toDestination()
+  }
 }
 
-
-//replay distored audio back to user
-// nodes
-/*
-take user media/input
-distort it
-play it back
-*/
-
-
-
-async function nodesPlay() {
-  await startRecording()
+//nodes to distort audio
+async function runNodes() {
   const volume = new Tone.Gain(0.8)
   const effect = new Tone.Vibrato()
 
   player.connect(effect)
   effect.connect(volume)
   volume.toDestination()
-  player.start()
 }
 
+//play back distored audio to user
+async function playNew() {
+  player.start()
+}
 
 //audio graph
   /*
   source --> volume --> speaker
   */
+
 //UI, control
-nn.create('button')
-  .content('play thru nodes!')
+  //setup buttons
+let recordButton = nn.create('button')
+  .content('Start Recording')
   .addTo('body')
-  .on('click', nodesPlay)
-  
+  .on('click', recordAudio)
+
+let distortButton = nn.create('button')
+  .content('Distort')
+  .addTo('body')
+  .on('click', runNodes)
+
+let playNewButton = nn.create('button')
+  .content('Play new audio!')
+  .addTo('body')
+  .on('click', playNew)
+
+
 </script>
