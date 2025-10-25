@@ -65,30 +65,17 @@ let recordButton = nn.create('button')
   .content('Start Recording')
   .addTo('body')
   .on('click', recordAudio)
-  .style ({
-    position: 'absolute',
-    top: '50px',
-    left: '100px'
-  })
 
 let distortButton = nn.create('button')
   .content('Distort')
   .addTo('body')
   .on('click', runNodes)
-  .style ({
-    position: 'absolute',
-    top: '50px',
-    left: '200px'
-  })
+
 
 let playNewButton = nn.create('button')
   .content('Play new audio!')
   .addTo('body')
   .on('click', playNew)
-  .style ({
-    position: 'absolute',
-    top: '50px',
-    left: '300px'
-  })
+
 
 </script>
