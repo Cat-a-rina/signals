@@ -10,13 +10,15 @@ play it back*/
 let playableAudio
 let player
 let isRecording = false
+let mic 
+let recorder
 
 async function recordAudio() {
   await Tone.start()
   //set up mic to take in audio from user
-  const mic = new Tone.UserMedia()
+  mic = new Tone.UserMedia()
   //set up recorder
-  const recorder = new Tone.Recorder()
+  recorder = new Tone.Recorder()
   //check if not already recording
   if (!isRecording) {
     //open mic and connect to recorder
@@ -26,23 +28,30 @@ async function recordAudio() {
     recorder.start()
     isRecording = true
     
-    recordAudio.content('Stop Recording')
+    recordButton.content('Stop Recording')
   } else {
-    //stop mic
-    mic.close()
-    isRecording = false
     //store recorded audio as original audio
+    recordButton.content('Start Recording')
+    //stop mic
     const originalAudio = await recorder.stop()
+    
+    mic.close()
+
     //turn into audio into usable URL
+    
     playableAudio = URL.createObjectURL(originalAudio)
     player = new Tone.Player(playableAudio).toDestination()
+    await player.load(playableAudio)
+    isRecording = false    
   }
 }
 
 //nodes to distort audio
-async function runNodes() {
+function runNodes() {
+  
+  player.disconnect()
   const volume = new Tone.Gain(0.8)
-  const effect = new Tone.Vibrato()
+  const effect = new Tone.Vibrato(5, 0.3)
 
   player.connect(effect)
   effect.connect(volume)
